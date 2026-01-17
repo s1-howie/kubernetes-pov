@@ -1,0 +1,59 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: sentinelone-pov
+  # labels:
+  #   # Pod Security Standards (PSS) namespace labels:
+  #   #
+  #   # 1) AUDIT: records violations to the Kubernetes audit log, but does NOT block.
+  #   #    Use this to understand what would break before turning on enforcement.
+  #   pod-security.kubernetes.io/audit: restricted
+  #   pod-security.kubernetes.io/audit-version: latest
+  #
+  #   # 2) WARN: returns user-visible warnings on kubectl apply/create, but does NOT block.
+  #   #    Great for developer feedback without breaking deployments.
+  #   pod-security.kubernetes.io/warn: restricted
+  #   pod-security.kubernetes.io/warn-version: latest
+  #
+  #   # 3) ENFORCE: BLOCKS pods that violate the profile (admission denies the request).
+  #   #    Turn this on only after you've validated workloads via audit/warn.
+  #   # pod-security.kubernetes.io/enforce: restricted
+  #   # pod-security.kubernetes.io/enforce-version: latest
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sentinelone-pov
+  namespace: sentinelone-pov
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sentinelone-pov
+  template:
+    metadata:
+      labels:
+        app: sentinelone-pov
+    spec:
+      containers:
+      - name: sentinelone-pov
+        image: python:3.11-slim
+        # image: python@sha256:c24e9effa2821a6885165d930d939fec2af0dcf819276138f11dd45e200bd032
+        #
+        # ⬆️ Uncommenting the digest-pinned image:
+        #    - Replaces a mutable tag ("3.11-slim") with an immutable SHA256 digest
+        #    - Guarantees the exact same image is used every time
+        #    - Prevents supply-chain attacks via tag replacement
+        #    - Improves auditability and reproducibility
+        command: ["sh", "-c", "echo SentinelOne POV running; sleep 3600"]
+        # securityContext:
+        #   capabilities:
+        #     drop: ["ALL"]
+        #
+        # ⬆️ Uncommenting this securityContext:
+        #    - Drops all Linux capabilities from the container
+        #    - Prevents privilege escalation via kernel capabilities
+        #    - Aligns with the Pod Security "restricted" profile
+        #
+        #    This significantly reduces the container’s attack surface
+        #    and is considered a baseline hardening best practice.
