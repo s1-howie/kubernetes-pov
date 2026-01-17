@@ -70,7 +70,7 @@ spec:
 
             # Optional hardening: make root filesystem read-only.
             # If enabled, mount a writable /tmp (see volumes below).
-            # readOnlyRootFilesystem: true
+            readOnlyRootFilesystem: true
 
           # Resource requests/limits (often required by org policy/admission controllers)
           resources:
@@ -81,14 +81,15 @@ spec:
               cpu: "250m"
               memory: "256Mi"
 
-          # If you enable readOnlyRootFilesystem, uncomment the volumeMount + volumes below.
-          # volumeMounts:
-          #   - name: tmp
-          #     mountPath: /tmp
+          # Writable temp space required when root filesystem is read-only
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
 
-      # volumes:
-      #   - name: tmp
-      #     emptyDir: {}
+      # Ephemeral writable volume for /tmp
+      volumes:
+        - name: tmp
+          emptyDir: {}
 ---
 # Optional NetworkPolicy (defense-in-depth)
 # ⬆️ Uncomment to block all ingress except TCP 80/443, while allowing all egress.
