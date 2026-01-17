@@ -7,17 +7,17 @@ metadata:
     #
     # 1) AUDIT: records violations to the Kubernetes audit log, but does NOT block.
     #    Use this to understand what would break before turning on enforcement.
-    pod-security.kubernetes.io/audit: restricted
+    pod-security.kubernetes.io/audit: baseline
     pod-security.kubernetes.io/audit-version: latest
   
     # 2) WARN: returns user-visible warnings on kubectl apply/create, but does NOT block.
     #    Great for developer feedback without breaking deployments.
-    pod-security.kubernetes.io/warn: restricted
+    pod-security.kubernetes.io/warn: baseline
     pod-security.kubernetes.io/warn-version: latest
   
     # 3) ENFORCE: BLOCKS pods that violate the profile (admission denies the request).
     #    Turn this on only after you've validated workloads via audit/warn.
-    # pod-security.kubernetes.io/enforce: restricted
+    # pod-security.kubernetes.io/enforce: baseline
     # pod-security.kubernetes.io/enforce-version: latest
 ---
 apiVersion: apps/v1
