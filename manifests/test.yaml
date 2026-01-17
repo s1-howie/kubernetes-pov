@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sentinelone-pov
+  namespace: sentinelone-pov
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sentinelone-pov
+  template:
+    metadata:
+      labels:
+        app: sentinelone-pov
+    spec:
+      securityContext:
+        # Pod-level: applies defaults to all containers
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        seccompProfile:
+          type: RuntimeDefault
+
+      containers:
+        - name: sentinelone-pov
+          image: python@sha256:c24e9effa2821a6885165d930d939fec2af0dcf819276138f11dd45e200bd032
+          command: ["sh", "-c", "echo SentinelOne POV running; sleep 3600"]
+          securityContext:
+            # Container-level: explicit + least privilege
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
