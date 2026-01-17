@@ -49,7 +49,7 @@ spec:
         securityContext:
           capabilities:
             drop: ["ALL"]
-        
+          
           # ⬆️ Uncommenting this securityContext:
           #    - Drops all Linux capabilities from the container
           #    - Prevents privilege escalation via kernel capabilities
@@ -57,3 +57,23 @@ spec:
           #   
           #    This significantly reduces the container’s attack surface
           #    and is considered a baseline hardening best practice.
+          #
+          # Required by Pod Security "restricted"
+          # ------------------------------------
+          # Prevents the container from gaining additional privileges
+          # via setuid/setgid binaries or other escalation mechanisms.
+          allowPrivilegeEscalation: false
+
+          # Required by Pod Security "restricted"
+          # ------------------------------------
+          # Ensures the container does NOT run as UID 0 (root).
+          # Reduces blast radius if the container is compromised.
+          runAsNonRoot: true
+
+          # Required by Pod Security "restricted"
+          # ------------------------------------
+          # Applies the default seccomp profile to restrict kernel syscalls.
+          # This significantly reduces the kernel attack surface and
+          # blocks many container escape techniques.
+          seccompProfile:
+            type: RuntimeDefault
