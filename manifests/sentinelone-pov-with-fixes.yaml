@@ -41,6 +41,11 @@ spec:
         # If your image already sets a non-root USER, you typically don't need runAsUser.
         runAsNonRoot: true
 
+        # Explicit non-root UID/GID (avoids ambiguity and policy failures)
+        # Ensure this UID/GID exists in the image to avoid "I have no name!"
+        runAsUser: 1000
+        runAsGroup: 1000
+
         # Required by PSS "restricted": apply default seccomp syscall filtering.
         seccompProfile:
           type: RuntimeDefault
