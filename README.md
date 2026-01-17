@@ -6,9 +6,16 @@ Example YAML for testing KSPM and/or Admission Controller features
 ### [View the manifest](manifests/sentinelone-pov.yaml)
 
 
-### Apply the manifest
+### Apply the sentinelone-pov manifest
 
 ```bash
 kubectl apply -f https://raw.githubusercontent.com/s1-howie/kubernetes-pov/main/manifests/sentinelone-pov.yaml
+
+```
+
+### Apply the sentinelone-pov-with-fixes manifest
+
+```bash
+kubectl apply -f https://raw.githubusercontent.com/s1-howie/kubernetes-pov/main/manifests/sentinelone-pov-with-fixes.yaml
 
 ```

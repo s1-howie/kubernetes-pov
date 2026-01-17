@@ -40,20 +40,20 @@ spec:
         image: python:3.11-slim
         # image: python@sha256:c24e9effa2821a6885165d930d939fec2af0dcf819276138f11dd45e200bd032
         #
-        # ⬆️ Uncommenting the digest-pinned image:
-        #    - Replaces a mutable tag ("3.11-slim") with an immutable SHA256 digest
-        #    - Guarantees the exact same image is used every time
-        #    - Prevents supply-chain attacks via tag replacement
-        #    - Improves auditability and reproducibility
+        #   # ⬆️ Uncommenting the digest-pinned image (and commenting out the tag-based image):
+        #   #    - Replaces a mutable tag ("3.11-slim") with an immutable SHA256 digest
+        #   #    - Guarantees the exact same image is used every time
+        #   #    - Prevents supply-chain attacks via tag replacement
+        #   #    - Improves auditability and reproducibility
         command: ["sh", "-c", "echo SentinelOne POV running; sleep 3600"]
         # securityContext:
         #   capabilities:
         #     drop: ["ALL"]
         #
-        # ⬆️ Uncommenting this securityContext:
-        #    - Drops all Linux capabilities from the container
-        #    - Prevents privilege escalation via kernel capabilities
-        #    - Aligns with the Pod Security "restricted" profile
-        #
-        #    This significantly reduces the container’s attack surface
-        #    and is considered a baseline hardening best practice.
+        #   # ⬆️ Uncommenting this securityContext:
+        #   #    - Drops all Linux capabilities from the container
+        #   #    - Prevents privilege escalation via kernel capabilities
+        #   #    - Aligns with the Pod Security "restricted" profile
+        #   #   
+        #   #    This significantly reduces the container’s attack surface
+        #   #    and is considered a baseline hardening best practice.
