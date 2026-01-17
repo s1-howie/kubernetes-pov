@@ -68,9 +68,9 @@ spec:
           # ------------------------------------
           # Ensures the container does NOT run as UID 0 (root).
           # Reduces blast radius if the container is compromised.
-          runAsNonRoot: true
-          runAsUser: 1001
-          runAsGroup: 1001
+          # runAsNonRoot: true
+          # runAsUser: 1001
+          # runAsGroup: 1001
 
           # Required by Pod Security "restricted"
           # ------------------------------------
