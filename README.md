@@ -11,9 +11,9 @@ Example YAML for testing KSPM and/or Admission Controller features
 
 
 
-## Apply the manifest
+### Apply the manifest
 
 ```bash
-kubectl apply -f manifests/sentinelone-pov.yaml
+kubectl apply -f https://github.com/ORG/REPO/raw/main/manifests/sentinelone-pov.yaml
 
 ```
