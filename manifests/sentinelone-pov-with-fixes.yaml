@@ -9,12 +9,12 @@ metadata:
     #    Use this to understand what would break before turning on enforcement.
     pod-security.kubernetes.io/audit: restricted
     pod-security.kubernetes.io/audit-version: latest
-  
+
     # 2) WARN: returns user-visible warnings on kubectl apply/create, but does NOT block.
     #    Great for developer feedback without breaking deployments.
     pod-security.kubernetes.io/warn: restricted
     pod-security.kubernetes.io/warn-version: latest
-  
+
     # 3) ENFORCE: BLOCKS pods that violate the profile (admission denies the request).
     #    Turn this on only after you've validated workloads via audit/warn.
     # pod-security.kubernetes.io/enforce: restricted
@@ -35,25 +35,86 @@ spec:
       labels:
         app: sentinelone-pov
     spec:
+      # Pod-level defaults (applies to all containers in the pod)
+      securityContext:
+        # Required by PSS "restricted": ensure containers do not run as root.
+        # If your image already sets a non-root USER, you typically don't need runAsUser.
+        runAsNonRoot: true
+
+        # Required by PSS "restricted": apply default seccomp syscall filtering.
+        seccompProfile:
+          type: RuntimeDefault
+
+      # Best practice when the pod does NOT need the Kubernetes API:
+      # reduces impact if the container is compromised.
+      automountServiceAccountToken: false
+
       containers:
-      - name: sentinelone-pov
-        # image: howiehowerton/sentinelone-pov:1.0
-        image: howiehowerton/sentinelone-pov@sha256:7bfcd3d06cd9d738c2cc0ddcfca88d21985fd0bcebf690bcb592768201352143  # NOTE: This is the linux/amd64 image
-        
-          # ⬆️ Uncommenting the digest-pinned image (and commenting out the tag-based image):
-          #    - Replaces a mutable tag ("3.11-slim") with an immutable SHA256 digest
-          #    - Guarantees the exact same image is used every time
-          #    - Prevents supply-chain attacks via tag replacement
-          #    - Improves auditability and reproducibility
-        command: ["sh", "-c", "echo SentinelOne POV running; sleep 3600"]
-        securityContext:
-          capabilities:
-            drop: ["ALL"]
-        
-          # ⬆️ Uncommenting this securityContext:
-          #    - Drops all Linux capabilities from the container
-          #    - Prevents privilege escalation via kernel capabilities
-          #    - Aligns with the Pod Security "restricted" profile
-          #   
-          #    This significantly reduces the container’s attack surface
-          #    and is considered a restricted hardening best practice.
+        - name: sentinelone-pov
+          # Image immutability / supply-chain hardening
+          # ------------------------------------------
+          # image: howiehowerton/sentinelone-pov:1.0
+          image: howiehowerton/sentinelone-pov@sha256:7bfcd3d06cd9d738c2cc0ddcfca88d21985fd0bcebf690bcb592768201352143 # NOTE: linux/amd64 image
+
+          command: ["sh", "-c", "echo SentinelOne POV running; sleep 3600"]
+
+          securityContext:
+            # Baseline hardening + PSS "restricted" alignment
+            # ----------------------------------------------
+            # Drop all Linux capabilities (least privilege).
+            capabilities:
+              drop: ["ALL"]
+
+            # Required by PSS "restricted": prevent privilege escalation.
+            allowPrivilegeEscalation: false
+
+            # Optional hardening: make root filesystem read-only.
+            # If enabled, mount a writable /tmp (see volumes below).
+            # readOnlyRootFilesystem: true
+
+          # Resource requests/limits (often required by org policy/admission controllers)
+          resources:
+            requests:
+              cpu: "50m"
+              memory: "64Mi"
+            limits:
+              cpu: "250m"
+              memory: "256Mi"
+
+          # If you enable readOnlyRootFilesystem, uncomment the volumeMount + volumes below.
+          # volumeMounts:
+          #   - name: tmp
+          #     mountPath: /tmp
+
+      # volumes:
+      #   - name: tmp
+      #     emptyDir: {}
+---
+# Optional NetworkPolicy (defense-in-depth)
+# ⬆️ Uncomment to block all ingress except TCP 80/443, while allowing all egress.
+#
+# apiVersion: networking.k8s.io/v1
+# kind: NetworkPolicy
+# metadata:
+#   name: sentinelone-pov-allow-web-ingress
+#   namespace: sentinelone-pov
+# spec:
+#   podSelector:
+#     matchLabels:
+#       app: sentinelone-pov
+#
+#   policyTypes:
+#     - Ingress
+#     - Egress
+#
+#   # Deny ingress by default; allow only 80/443.
+#   ingress:
+#     - ports:
+#         - protocol: TCP
+#           port: 80
+#         - protocol: TCP
+#           port: 443
+#
+#   # Allow all egress.
+#   egress:
+#     - {}
