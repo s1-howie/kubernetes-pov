@@ -37,8 +37,8 @@ spec:
     spec:
       containers:
       - name: sentinelone-pov
-        image: public.ecr.aws/bitnami/python:3.11
-        # image: public.ecr.aws/bitnami/python@sha256:bc6eb86206dce05044af84ebc7fd48ac0c9fecfee975296c8cdd93d5bd25f3f1  # NOTE: This is the linux/amd64 image
+        image: howiehowerton/sentinelone-pov:1.0
+        # image: howiehowerton/sentinelone-pov@sha256:7bfcd3d06cd9d738c2cc0ddcfca88d21985fd0bcebf690bcb592768201352143  # NOTE: This is the linux/amd64 image
         #
         #   # ⬆️ Uncommenting the digest-pinned image (and commenting out the tag-based image):
         #   #    - Replaces a mutable tag ("3.11-slim") with an immutable SHA256 digest

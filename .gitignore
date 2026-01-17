@@ -1,2 +1,5 @@
 todo.txt
 teaching_only/*
+
+# container build environment
+container_build/build-metadata.json
