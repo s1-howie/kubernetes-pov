@@ -2,23 +2,6 @@ apiVersion: v1
 kind: Namespace
 metadata:
   name: sentinelone-pov
-  # labels:
-  #   # Pod Security Standards (PSS) namespace labels:
-  #   #
-  #   # 1) AUDIT: records violations to the Kubernetes audit log, but does NOT block.
-  #   #    Use this to understand what would break before turning on enforcement.
-  #   pod-security.kubernetes.io/audit: baseline
-  #   pod-security.kubernetes.io/audit-version: latest
-  #
-  #   # 2) WARN: returns user-visible warnings on kubectl apply/create, but does NOT block.
-  #   #    Great for developer feedback without breaking deployments.
-  #   pod-security.kubernetes.io/warn: baseline
-  #   pod-security.kubernetes.io/warn-version: latest
-  #
-  #   # 3) ENFORCE: BLOCKS pods that violate the profile (admission denies the request).
-  #   #    Turn this on only after you've validated workloads via audit/warn.
-  #   # pod-security.kubernetes.io/enforce: baseline
-  #   # pod-security.kubernetes.io/enforce-version: latest
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -38,22 +21,4 @@ spec:
       containers:
       - name: sentinelone-pov
         image: howiehowerton/sentinelone-pov:1.0
-        # image: howiehowerton/sentinelone-pov@sha256:7bfcd3d06cd9d738c2cc0ddcfca88d21985fd0bcebf690bcb592768201352143  # NOTE: This is the linux/amd64 image
-        #
-        #   # ⬆️ Uncommenting the digest-pinned image (and commenting out the tag-based image):
-        #   #    - Replaces a mutable tag ("3.11-slim") with an immutable SHA256 digest
-        #   #    - Guarantees the exact same image is used every time
-        #   #    - Prevents supply-chain attacks via tag replacement
-        #   #    - Improves auditability and reproducibility
         command: ["sh", "-c", "echo SentinelOne POV running; sleep 3600"]
-        # securityContext:
-        #   capabilities:
-        #     drop: ["ALL"]
-        #
-        #   # ⬆️ Uncommenting this securityContext:
-        #   #    - Drops all Linux capabilities from the container
-        #   #    - Prevents privilege escalation via kernel capabilities
-        #   #    - Aligns with the Pod Security "baseline" profile
-        #   #   
-        #   #    This significantly reduces the container’s attack surface
-        #   #    and is considered a baseline hardening best practice.
